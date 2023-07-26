@@ -1,9 +1,9 @@
 const User = require("../models/User");
-const fs = require("fs");
 
 // Create or update a user
 const createUser = async (req, res) => {
   const { username, metamaskWalletAddress } = req.body;
+  const imageFile = req.file;
   console.log({ username, metamaskWalletAddress });
 
   // Check if a user with the same wallet address exists
@@ -14,14 +14,11 @@ const createUser = async (req, res) => {
         // Update the existing user's username and image
         existingUser.username = username;
 
-        if (req.file) {
-          // Read the uploaded image file
-          const imageFile = req.file;
-          const imageData = fs.readFileSync(imageFile.path);
-          existingUser.image.data = imageData;
-          existingUser.image.contentType = imageFile.mimetype;
-          // Delete the temporary image file after updating the user
-          fs.unlinkSync(imageFile.path);
+        if (imageFile) {
+          existingUser.image = {
+            data: imageFile.buffer, // Save the uploaded image data as a Buffer
+            contentType: imageFile.mimetype,
+          };
         }
 
         // Save the updated user document
@@ -37,8 +34,6 @@ const createUser = async (req, res) => {
           });
       } else {
         // Create a new user document
-        console.log({ here: "else" });
-
         const newUser = new User({
           username,
           metamaskWalletAddress,
@@ -46,18 +41,11 @@ const createUser = async (req, res) => {
         console.log({ newUser });
         console.log({ file: req.file });
 
-        if (req.file) {
-          // Read the uploaded image file
-          const imageFile = req.file;
-          console.log({ imageFile });
-          const imageData = fs.readFileSync(imageFile.path);
-          
+        if (imageFile) {
           newUser.image = {
-            data: imageData,
+            data: imageFile.buffer, // Save the uploaded image data as a Buffer
             contentType: imageFile.mimetype,
           };
-          // Delete the temporary image file after saving the user
-          fs.unlinkSync(imageFile.path);
         }
 
         // Save the new user document
