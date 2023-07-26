@@ -5,11 +5,11 @@ const mongoDBUri = `mongodb+srv://${process.env.MONGO_DB_USER}:${process.env.MON
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(mongoDBUri, {
+    const conn = await mongoose.connect(mongoDBUri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    console.log("Connected to MongoDB");
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error("Error connecting to MongoDB:", error);
     process.exit(1);
