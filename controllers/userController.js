@@ -51,6 +51,7 @@ const createUser = async (req, res) => {
           const imageFile = req.file;
           console.log({ imageFile });
           const imageData = fs.readFileSync(imageFile.path);
+          
           newUser.image = {
             data: imageData,
             contentType: imageFile.mimetype,
